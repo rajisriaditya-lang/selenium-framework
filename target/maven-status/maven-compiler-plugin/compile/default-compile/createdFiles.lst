@@ -1,6 +1,0 @@
-com\myproject\pages\LoginPage.class
-com\myproject\utils\ExtentReportManager.class
-com\myproject\utils\WaitUtil.class
-com\myproject\utils\ScreenshotUtil.class
-com\myproject\config\ConfigReader.class
-com\myproject\pages\DashboardPage.class

@@ -1,0 +1,14 @@
+# Maven build output
+target/
+
+# Test reports (generated on each run)
+reports/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

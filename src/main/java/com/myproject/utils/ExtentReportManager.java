@@ -1,4 +1,3 @@
-
 package com.myproject.utils;
 
 import com.aventstack.extentreports.ExtentReports;
@@ -20,13 +19,14 @@ public class ExtentReportManager {
             spark.config().setTheme(Theme.STANDARD);
             spark.config().setDocumentTitle("Selenium Test Report");
             spark.config().setReportName("Regression Suite Results");
+            spark.config().setOfflineMode(true);  // FIX: embeds CSS/JS inline so report renders correctly from file system
 
             extent = new ExtentReports();
             extent.attachReporter(spark);
 
-            extent.setSystemInfo("OS", System.getProperty("os.name"));
+            extent.setSystemInfo("OS",   System.getProperty("os.name"));
             extent.setSystemInfo("Java", System.getProperty("java.version"));
-            extent.setSystemInfo("URL", "https://the-internet.herokuapp.com");
+            extent.setSystemInfo("URL",  "https://the-internet.herokuapp.com");
         }
 
         return extent;
@@ -49,4 +49,3 @@ public class ExtentReportManager {
             extent.flush();
     }
 }
-

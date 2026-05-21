@@ -24,7 +24,13 @@ public class BaseTest {
     public void setUp() {
 
         String browser = ConfigReader.getBrowser().trim().toLowerCase();
-        boolean headless = ConfigReader.isHeadless();
+
+        // FIX: Check system property first (-Dheadless=true from CI),
+        // then fall back to config.properties value
+        String headlessProp = System.getProperty("headless");
+        boolean headless = (headlessProp != null)
+                ? Boolean.parseBoolean(headlessProp)
+                : ConfigReader.isHeadless();
 
         if (browser.equals("firefox")) {
 
@@ -45,23 +51,22 @@ public class BaseTest {
                 options.addArguments("--disable-dev-shm-usage");
             }
             options.addArguments("--window-size=1920,1080");
-
-            // FIX: Disable Chrome's aggressive connection cleanup on Chrome 148
             options.addArguments("--disable-features=NetworkServiceInProcess");
             options.addArguments("--remote-allow-origins=*");
 
             driver = new ChromeDriver(options);
         }
 
-        driver.manage().window().maximize();
+        // Only maximize when headed — headless has no window
+        if (!headless) {
+            driver.manage().window().maximize();
+        }
     }
 
     @AfterMethod
     public void tearDown(ITestResult result) {
 
-        // FIX: Guard screenshot capture against dead/closed browser sessions
         if (result.getStatus() == ITestResult.FAILURE) {
-
             try {
                 String screenshotPath = ScreenshotUtil.capture(driver, result.getName());
 
@@ -78,7 +83,6 @@ public class BaseTest {
                 }
 
             } catch (Exception e) {
-                // Browser session was already dead — log but don't rethrow
                 System.out.println("WARN: Could not capture screenshot (session closed): "
                         + e.getMessage());
                 if (ExtentReportManager.getTest() != null) {
@@ -88,7 +92,6 @@ public class BaseTest {
             }
         }
 
-        // FIX: Guard quit() against already-closed sessions
         if (driver != null) {
             try {
                 driver.quit();
